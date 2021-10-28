@@ -21,7 +21,7 @@
 <div id="blackcoverlane1" style="width:162px; height: 90%; position:absolute; top:0; left:8px; z-index: 10; background-color: rgba(0, 0, 0, 33%)"></div>
 <div id="blackcoverlane2" style="width:162px; height: 90%; position:absolute; top:0; left:170px; z-index: 10; background-color: rgba(0, 0, 0, 33%)"></div>
 <div id="redlane1" style=""></div>
-<span style="position:absolute; left:30%;top:10%">btw there is a 3.58 sec delay for songs to sync notes<br><br>
+<span style="position:absolute; left:30%;top:10%"><br><br>
 <span style="color:#DDD">
 <span style="color:rgb(255, 255, 0)">perfect: </span><span id="perfectcount">0</span><br>
 <span style="color:rgb(20, 128, 20)">great: </span><span id="greatcount">0</span><br>
@@ -40,7 +40,7 @@
 <div class="tabs" id="mods">
 auto-keys <input id="m1c" type="checkbox" onclick="mods[0] = document.getElementById('m1c').checked"></input><br>renobot helps you by pressing the 6 keys for you. now all you have to do is switch the lanes! :)<br><br>
 auto-switch <input id="m2c" type="checkbox" onclick="mods[1] = document.getElementById('m2c').checked"></input><br>renobot automatically swtiches the lanes for you, so you basically play normal 6k! :) (combine this with auto-keys to get full auto)<br><br>
-warning: these mods below will make the song offset innacurate!<br><br>
+warning: these mods below might make the song offset innacurate!<br><br>
 speed rate<br><span id="srtext">1.00x</span><br><button class="rbutton" onclick="speedrate-=0.05;if(speedrate<0.1){speedrate=0.1}">&lt;-</button><button onclick="speedrate+=0.05;if(speedrate>5){speedrate=5}">-&gt;</button><br>do you wanna play something but it's too hard or easy? use this.<br><br>
 scroll speed<br><span id="sstext">1.00x</span><br><button class="rbutton" onclick="scrollspeed-=0.05;;if(scrollspeed<0.25){scrollspeed=0.25}">&lt;-</button><button onclick="scrollspeed+=0.05;if(scrollspeed>8){scrollspeed=5}">-&gt;</button><br>if the notes are scrolling too slow or fast, you should use this.
 </div>
@@ -55,7 +55,8 @@ scroll speed<br><span id="sstext">1.00x</span><br><button class="rbutton" onclic
 lane <span style="color:#0080FF;">switching</span><br>
 <textarea id="lsc1" style="width:20px;height:20px;background-color:#200000;color:#FF0000;border-color:#FF0000;resize:none;outline:none;" maxlength="1">c</textarea>
 <textarea id="lsc2" style="width:20px;height:20px;background-color:#001020;color:#0080FF;border-color:#0080FF;resize:none;outline:none;" maxlength="1">n</textarea><br>
-<button onclick="setControls();">set</button>
+<button onclick="setControls();">set</button><br><br>
+base offset before song begins (ms)<br>3248 = use if the game runs too flawlessly<br><textarea id="oc" onkeypress="sboffset=isNaN(document.getElementById('oc').value) ? 0 : document.getElementById('oc').value" style="width:80px;height:20px;background-color:#001020;color:#0080FF;border-color:#0080FF;resize:none;outline:none;">3580</textarea><br>
 </div>
 </div>
 <div id="playblocker" style="display: none; position: absolute; top: 30%; left: 70%; width: 310px; height: 430px; background-color: #00000080; overflow: auto; z-index:10;"></div>

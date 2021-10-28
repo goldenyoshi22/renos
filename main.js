@@ -27,6 +27,7 @@ var jg = [0, 0, 0, 0]
 var chartstart = false;
 var purpletimes = []
 var notetimes = []
+var sboffset = 3590
 const times = [];
 let fps;
 
@@ -151,7 +152,7 @@ document.getElementById("bluekey3").style.backgroundColor = "#004080"
 function getPurple() {
 	if (chartstart != false) {
 		if (purpletimes.length != 0) {
-			if (Date.now() - (chartstart+(3590/scrollspeed)) >= purpletimes[0][1]) {
+			if (Date.now() - (chartstart+(sboffset/scrollspeed)) >= purpletimes[0][1]) {
 				switchPurple(purpletimes[0][0]);
 				purpletimes.splice(0, 1)
 			}
@@ -262,7 +263,7 @@ for(i = 0; i < notes.length; i++) {
 }
 let audio = new Audio("audio/" + audioname);
 let readpos = 0;
-setTimeout(()=>{audio.play();audio.playbackRate = speedrate}, (3590/scrollspeed)+(offset/scrollspeed))
+setTimeout(()=>{audio.play();audio.playbackRate = speedrate}, (sboffset/scrollspeed)+(offset/scrollspeed))
 inter = setInterval(() => {
 //if (notes[readpos] >= 1 && notes[readpos] <= 6) summonNote(Math.floor(notes[readpos]))
 if (typeof notes[readpos] == "object") {
