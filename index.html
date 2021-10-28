@@ -1,0 +1,63 @@
+<html>
+<head>
+<title>renos v0.2</title>
+<link rel="stylesheet" href="style.css">
+<script src="libraries/mousetrap.js"></script>
+<script src="main.js" defer></script>
+</head>
+<body>
+<div id="fps" style="font-size:30px;position:absolute;bottom:0;right:0;">GORTSON fps</div>
+<div id="score" style="font-size:30px;position:absolute;top:0;right:0;text-align:right;">000000<br>0.00%</div>
+<div id="redkey1" style="border: 2px solid #FF0000; width: 50px; height: 90px; background-color: #800000; display: table-cell;"></div>
+<div id="redkey2" style="border: 2px solid #FF0000; width: 50px; height: 90px; background-color: #800000; display: table-cell;"></div>
+<div id="redkey3" style="border: 2px solid #FF0000; width: 50px; height: 90px; background-color: #800000; display: table-cell;"></div>
+<div id="bluekey1" style="border: 2px solid #0080FF; width: 50px; height: 90px; background-color: #004080; display: table-cell;"></div>
+<div id="bluekey2" style="border: 2px solid #0080FF; width: 50px; height: 90px; background-color: #004080; display: table-cell;"></div>
+<div id="bluekey3" style="border: 2px solid #0080FF; width: 50px; height: 90px; background-color: #004080; display: table-cell;"></div>
+<div id="judgeperfect" style="width:324px; height: 10px; background-color: rgba(255, 255, 0, 50%);"></div>
+<div id="judgegreat" style="width:324px; height: 15px; background-color: rgba(20, 150, 20, 50%);"></div>
+<div id="judgegood" style="width:324px; height: 15px; background-color: rgba(0, 128, 255, 50%);"></div>
+<div id="judgemiss" style="width:324px; height: 15px; background-color: rgba(255, 0, 0, 50%);"></div>
+<div id="blackcoverlane1" style="width:162px; height: 90%; position:absolute; top:0; left:8px; z-index: 10; background-color: rgba(0, 0, 0, 33%)"></div>
+<div id="blackcoverlane2" style="width:162px; height: 90%; position:absolute; top:0; left:170px; z-index: 10; background-color: rgba(0, 0, 0, 33%)"></div>
+<div id="redlane1" style=""></div>
+<span style="position:absolute; left:30%;top:10%">btw there is a 3.58 sec delay for songs to sync notes<br><br>
+<span style="color:#DDD">
+<span style="color:rgb(255, 255, 0)">perfect: </span><span id="perfectcount">0</span><br>
+<span style="color:rgb(20, 128, 20)">great: </span><span id="greatcount">0</span><br>
+<span style="color:rgb(0, 128, 255)">good: </span><span id="goodcount">0</span><br>
+<span style="color:rgb(255, 0, 0)">miss: </span><span id="misscount">0</span><br>
+</span>
+</span>
+<span id="judgetext" style="font-size:30px;position:absolute;width:324px;top:30%;color:#FFFF0080;text-align:center;"></span>
+<span id="combotext" style="font-size:50px;position:absolute;width:324px;top:42%;color:#80808080;text-align:center;"><b></b></span>
+<div style="border: 2px solid #FF0000; position: absolute; top: 30%; left: 70%; width: 300px; height: 420px; background-color: #400000; overflow: auto;">
+<button class="rbutton" onclick="switchTab('songs')">songs</button><button class="rbutton" onclick="switchTab('mods')">mods</button><button class="rbutton" onclick="switchTab('options')">options</button>
+<div class="tabs" id="songs">
+<button onclick="readChart(142, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [1, 3], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 3, 0, ['purple', 5], 0, 0, 0, 0, 0, 0, 0, ['notpurple']], 'tutorial_i_made_while_my_parents_were_asleep.mp3')">goldenyoshi22 - tutorial i made while my parents were sleeping [easy 1]</button><br>
+<button onclick="readChart(901.52, [3, 0, 2, 0, 1, 0, 0, 0, 1, 0, 2, 0, 3, 0, 0, 0, 6, 0, 5, 0, 4, 0, 0, 0, 4, 0, 5, 0, 6, 0, 0, 0, 3, 0, 2, 0, 1, 0, 0, 0, 3, 0, 0, 0, 1, 0, 3, 2, 1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, [4, 6], 0, 5, 0, 4, 0, 0, 0, 4, 0, 5, 0, 6, 0, 0, 0, 3, 0, 2, 0, 1, 0, 0, 0, 1, 0, 2, 0, 3, 0, 0, 0, 6, 0, 5, 0, 4, 0, 0, 0, 5, 0, 0, 0, 5, 0, 6, 5, 4, 0, 0, 0, 6, 0, 0, 0, 5, 0, 0, 0, 4, 0, 0, 0, [1, 3], 0, 2, 0, 1, 0, 0, 0, 1, 0, 2, 0, 3, 0, 0, 0, 6, 0, 5, 0, 4, 0, 0, 0, 4, 0, 5, 0, 6, 0, 0, 0, [1, 3], 0, 2, 0, 1, 0, 0, 0, 4, 0, 3, 0, 2, 0, 0, 0, [6, 5], 0, 4, 0, 3, 0, 0, 0, 6, 0, 5, 0, 4, 0, 0, 0, [2, 3], 0, 1, 0, 0, 0, [1, 3], 0, 2, 0, 0, 0, [5, 6], 0, 4, 0, 0, 0, [4, 6], 0, 5, 0, 0, 0, [1, 2], 3, 2, 1, [2, 3], 0, ['purple'], 0, [1, 4], 0, 1, 0, [2, 6], 0, [3, 6], 0, 5, 0, 1, 0, [2, 6], 0, 5, 0, [3, 4], 0, 0, 0, [1, 6], 0, [3, 6], 2, 1, 0, 0, 0, [1, 6], 0, 0, 0, 2, 0, 0, 0, [1, 6], 0, [2, 6]], 'Boo_NES.mp3', (60/901.52) * -5000)">Cardboard Box - Boo (NES) [hard 11]</button>
+</div>
+<div class="tabs" id="mods">
+auto-keys <input id="m1c" type="checkbox" onclick="mods[0] = document.getElementById('m1c').checked"></input><br>renobot helps you by pressing the 6 keys for you. now all you have to do is switch the lanes! :)<br><br>
+auto-switch <input id="m2c" type="checkbox" onclick="mods[1] = document.getElementById('m2c').checked"></input><br>renobot automatically swtiches the lanes for you, so you basically play normal 6k! :) (combine this with auto-keys to get full auto)<br><br>
+warning: these mods below will make the song offset innacurate!<br><br>
+speed rate<br><span id="srtext">1.00x</span><br><button class="rbutton" onclick="speedrate-=0.05;if(speedrate<0.1){speedrate=0.1}">&lt;-</button><button onclick="speedrate+=0.05;if(speedrate>5){speedrate=5}">-&gt;</button><br>do you wanna play something but it's too hard or easy? use this.<br><br>
+scroll speed<br><span id="sstext">1.00x</span><br><button class="rbutton" onclick="scrollspeed-=0.05;;if(scrollspeed<0.25){scrollspeed=0.25}">&lt;-</button><button onclick="scrollspeed+=0.05;if(scrollspeed>8){scrollspeed=5}">-&gt;</button><br>if the notes are scrolling too slow or fast, you should use this.
+</div>
+<div class="tabs" id="options"><h2>controls</h2>red lanes<br>
+<textarea id="rc1" style="width:20px;height:20px;background-color:#200000;color:#FF0000;border-color:#FF0000;resize:none;outline:none;" maxlength="1">a</textarea>
+<textarea id="rc2" style="width:20px;height:20px;background-color:#200000;color:#FF0000;border-color:#FF0000;resize:none;outline:none;" maxlength="1">s</textarea>
+<textarea id="rc3" style="width:20px;height:20px;background-color:#200000;color:#FF0000;border-color:#FF0000;resize:none;outline:none;" maxlength="1">d</textarea><br>
+<span style="color:#0080FF;">blue lanes</span><br>
+<textarea id="bc1" style="width:20px;height:20px;background-color:#001020;color:#0080FF;border-color:#0080FF;resize:none;outline:none;" maxlength="1">j</textarea>
+<textarea id="bc2" style="width:20px;height:20px;background-color:#001020;color:#0080FF;border-color:#0080FF;resize:none;outline:none;" maxlength="1">k</textarea>
+<textarea id="bc3" style="width:20px;height:20px;background-color:#001020;color:#0080FF;border-color:#0080FF;resize:none;outline:none;" maxlength="1">l</textarea><br>
+lane <span style="color:#0080FF;">switching</span><br>
+<textarea id="lsc1" style="width:20px;height:20px;background-color:#200000;color:#FF0000;border-color:#FF0000;resize:none;outline:none;" maxlength="1">c</textarea>
+<textarea id="lsc2" style="width:20px;height:20px;background-color:#001020;color:#0080FF;border-color:#0080FF;resize:none;outline:none;" maxlength="1">n</textarea><br>
+<button onclick="setControls();">set</button>
+</div>
+</div>
+<div id="playblocker" style="display: none; position: absolute; top: 30%; left: 70%; width: 310px; height: 430px; background-color: #00000080; overflow: auto; z-index:10;"></div>
+</body>
+</html>

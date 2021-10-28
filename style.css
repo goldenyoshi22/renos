@@ -1,0 +1,30 @@
+body {
+font-family: monospace;
+background-color: black;
+color: #FF0000;
+font-size: 15px;
+}
+
+button {
+	border:2px solid #0080FF;
+	background-color:#004080;
+	font-family:monospace;
+	color:#0080FF;
+	outline:none;
+}
+
+button:hover {
+	background-color:#0060A0;
+}
+
+.rbutton {
+	border:2px solid #FF0000;
+	background-color:#800000;
+	font-family:monospace;
+	color:#FF0000;
+	outline:none;
+}
+
+.rbutton:hover {
+	background-color:#A00000;
+}
