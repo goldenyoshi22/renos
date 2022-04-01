@@ -14,7 +14,7 @@ var chartstart = false;
 var purpletimes = []
 var notetimes = []
 var holdtimes = []
-var sboffset = 3590
+var sboffset = 3000
 var calibrating = false;
 var bpma = 60
 const times = [];
@@ -29,6 +29,57 @@ var songAudios = [new Audio('audio/tutorial_i_made_while_my_parents_were_asleep.
 startAnimating(60);
 var soundaa = [new Audio('audio/sfx/sfx.wav'), new Audio('audio/sfx/sfx_2.wav')]
 
+var colors = ['#FF0000', '#0080FF', '#A000FF']
+
+
+var notes = []
+
+var currentjg = 0
+
+
+var mods = [false, false, false, false, false];
+//autokeys, autoswitch, 4key, true perfect, no long notes
+
+
+var showjudge = false
+
+
+var botslop = 0
+
+class note {
+constructor(lane) {
+this.lane = lane;
+this.time = Date.now();
+this.timeleft = 3000;
+this.id = notes.length;
+this.dead = false
+this.init();
+}
+init() {
+window.requestAnimationFrame(() => {
+this.timeleft = (this.time+3000) - Date.now();
+if (this.timeleft <= -220/timeHarsh) {currentjg=4;score-=25;notecount++;combo=0;jg[3]++;notes[this.id]=undefined;this.dead=true;if(calibrating){sboffset=Date.now()-ostrichostrich;document.getElementById("oc").value=sboffset}}
+if(!this.dead) this.init();
+})
+}
+hit() {
+if(!this.dead) {
+//console.log(this.timeleft)
+if (this.timeleft <= 20/timeHarsh && this.timeleft >= -20/timeHarsh && mods[3]) {currentjg=5;score+=165;score2+=3.3;notecount++;combo++;jg[4]++}
+else if (this.timeleft <= 40/timeHarsh && this.timeleft >= -40/timeHarsh) {currentjg=1;score+=150;score2+=3;notecount++;combo++;jg[0]++}
+else if (this.timeleft <= 100/timeHarsh && this.timeleft >= -100/timeHarsh) {currentjg=2;score+=100;score2+=2;notecount++;combo++;jg[1]++}
+else if (this.timeleft <= 160/timeHarsh && this.timeleft >= -160/timeHarsh) {currentjg=3;score+=50;score2+=1;notecount++;combo++;jg[2]++}
+else if (this.timeleft <= 220/timeHarsh && this.tieleft >= -220/timeHarsh) {currentjg=4;score-=25;notecount++;combo=0;jg[3]++}
+if (this.timeleft <= 220/timeHarsh && this.timeleft >= -220/timeHarsh) {notes[this.id]=undefined;this.dead=true}
+}
+}
+}
+
+function timetoposition(time) {
+//547
+return -(((time-3000))/5.484460694698354)
+}
+
 function startAnimating(fpsa) {
     fpsInterval = 1000 / fpsa;
     then = Date.now();
@@ -37,6 +88,108 @@ function startAnimating(fpsa) {
     animate();
 }
 
+var c = {
+rect: (color, x, y, width, height) => {
+var canvas = document.getElementById("gameCanvas")
+var ctx = canvas.getContext("2d");
+ctx.fillStyle = color
+if(color.length>7) ctx.globalAlpha = Number("0x" + color.split(7)[1])
+ctx.fillRect(x, y, width, height)
+ctx.globalAlpha = 1
+},
+
+clear: () => {
+var canvas = document.getElementById("gameCanvas")
+var ctx = canvas.getContext("2d");
+ctx.clearRect(0, 0, canvas.width, canvas.height)
+},
+
+text: (text, color, x, y, font="monospace", size="20px", align="left", stroke=false) => {
+var canvas = document.getElementById("gameCanvas")
+var ctx = canvas.getContext("2d");
+ctx.font = size + " " + font
+ctx.fillStyle = color
+ctx.textAlign = align
+if(color.length>7 && color.includes("#")) ctx.globalAlpha = Number("0x" + color.split(7)[1])
+if(!stroke) {ctx.fillText(text, x, y)}
+else {ctx.strokeText(text, x, y)}
+ctx.globalAlpha = 1
+}
+}
+
+function getColor(lane, a=true) {
+if (activeLane != 3) {
+if(keyspressed.includes(lane)&&a) {return (lane<4 ? shadeColor(colors[0], -37) : shadeColor(colors[1], -37))}
+else {return (lane<4 ? shadeColor(colors[0], -49.5) : shadeColor(colors[1], -49.5))}
+} else {
+if(keyspressed.includes(lane)&&a) {return shadeColor(colors[2], -37)}
+else {return shadeColor(colors[2], -49.5)}
+}
+}
+
+function refreshHitters() {
+c.clear()	
+
+c.text(combo, "#80808080", 1366/2, 634*0.42, "monospace", "50px", "center")
+if (currentjg!=0) {eval(jd(currentjg))}
+
+
+//borders
+c.rect((activeLane!=3 ? colors[0] : colors[2]), 575-54, 667-114, 54, 94)
+c.rect((activeLane!=3 ? colors[0] : colors[2]), 629-54, 667-114, 54, 94)
+c.rect((activeLane!=3 ? colors[0] : colors[2]), 683-54, 667-114, 54, 94)
+c.rect((activeLane!=3 ? colors[1] : colors[2]), 737-54, 667-114, 54, 94)
+c.rect((activeLane!=3 ? colors[1] : colors[2]), 791-54, 667-114, 54, 94)
+c.rect((activeLane!=3 ? colors[1] : colors[2]), 845-54, 667-114, 54, 94)
+//console.log(keyspressed.includes(6))
+//fills
+c.rect(getColor(1), 577-54, 667-112, 50, 90)
+c.rect(getColor(2), 631-54, 667-112, 50, 90)
+c.rect(getColor(3), 685-54, 667-112, 50, 90)
+c.rect(getColor(4), 739-54, 667-112, 50, 90)
+c.rect(getColor(5), 793-54, 667-112, 50, 90)
+c.rect(getColor(6), 847-54, 667-112, 50, 90)
+
+//notes
+let baa = 0
+if (notes.length > 0) {
+for (baa = 0; baa < notes.length; baa++) {
+if (notes[baa] != undefined) {
+c.rect((activeLane!=3 ? (notes[baa].lane < 4 ? colors[0] : colors[1]) : colors[2]), 521 + ((notes[baa].lane-1)*54), timetoposition(notes[baa].timeleft)-2, 54, 14)
+c.rect(getColor(notes[baa].lane, false), 523 + ((notes[baa].lane-1)*54), timetoposition(notes[baa].timeleft), 50, 10)
+}
+}
+}
+
+//showjudge
+if (showjudge) {
+c.rect('#FF800080', 575-54, 667-124, 324, 10)
+c.rect('#FFFF0080', 575-54, 667-134, 324, 10)
+c.rect('#14961480', 575-54, 667-164, 324, 30)
+c.rect('#0080FF80', 575-54, 667-194, 324, 30)
+c.rect('#FF000080', 575-54, 667-224, 324, 30)
+}
+
+//judges
+if(jg[0] != 0 || jg[1] != 0 || jg[2] != 0 || jg[3] != 0 || jg[4] != 0) {
+ostrich=0
+if(mods[3] || jg[4]>=1) {
+c.rect("#FF800080", 0, 0, (jg[4] / (jg[0] + jg[1] + jg[2] + jg[3] + jg[4]))*300, 22)
+c.text(jg[4], "#FFA020", 3, 16, "monospace", "16px", "left", false)
+} else {ostrich=22}
+c.rect("#FFFF0080", 0, 22-ostrich, (jg[0] / (jg[0] + jg[1] + jg[2] + jg[3] + jg[4]))*300, 22)
+c.text(jg[0], "#FFFF00", 3, 38-ostrich, "monospace", "16px", "left", false)
+c.rect("#14961480", 0, 44-ostrich, (jg[1] / (jg[0] + jg[1] + jg[2] + jg[3] + jg[4]))*300, 22)
+c.text(jg[1], "#479C47", 3, 60-ostrich, "monospace", "16px", "left", false)
+c.rect("#0080FF80", 0, 66-ostrich, (jg[2] / (jg[0] + jg[1] + jg[2] + jg[3] + jg[4]))*300, 22)
+c.text(jg[2], "#0080FF", 3, 82-ostrich, "monospace", "16px", "left", false)
+c.rect("#FF000080", 0, 88-ostrich, (jg[3] / (jg[0] + jg[1] + jg[2] + jg[3] + jg[4]))*300, 22)
+c.text(jg[3], "#FF0000", 3, 104-ostrich, "monospace", "16px", "left", false)
+}
+
+//blackcover
+if (activeLane != 3) c.rect("#00000055", (activeLane == 1 ? 1366/2 : (1366/2)-162), 0, 324/2, 1000)
+}
 
 function animate() {
 
@@ -73,11 +226,6 @@ function animate() {
     }
 }
 
-var mods = [false, false, false, false, false];
-//autokeys, autoswitch, 4key, true perfect, no long notes
-
-var botslop = 0
-
 
 function switchTab(tab) {
   Array.from(document.getElementsByClassName("tabs")).forEach(e => {e.style.display = "none"});
@@ -104,8 +252,6 @@ function refreshLoop() {
     times.push(now);
     fps = times.length;
 	document.getElementById("fps").innerHTML = `${fps} FPS`
-	movenotes();
-	moveholds();
 	getPurple();
 	//getNotes();
     //refreshLoop();
@@ -157,33 +303,12 @@ function updateText() {
 document.getElementById("srtext").innerHTML = speedrate.toFixed(2) + "x"
 document.getElementById("sstext").innerHTML = scrollspeed.toFixed(2) + "x"
 document.getElementById("thtext").innerHTML = timeHarsh.toFixed(2) + "x"
-if (activeLane!=3) {
-document.getElementById("blackcoverlane"+activeLane).style.display = "none"
-document.getElementById("blackcoverlane"+reverse12(activeLane)).style.display = "inline"
-} else {
-document.getElementById("blackcoverlane1").style.display = "none"
-document.getElementById("blackcoverlane2").style.display = "none"
-}
-document.getElementById("score").innerHTML = paddy(score, 6) + "<br>" + (isNaN(score2/(notecount*3)) ? "0.00" : (score2/(notecount*3)*100).toFixed(2)) + "%<br>" + getGrade(score2/(notecount*3)*100) + "<br>" + getClearStatus()
-document.getElementById("combotext").innerHTML = combo > 0 ? `<b>${combo}</b>` : ""
 
-document.getElementById("judgetrueperfect").style.height = (5*scrollspeed)/timeHarsh + "px";
-document.getElementById("judgeperfect").style.height = (5*scrollspeed)/timeHarsh + "px";
-document.getElementById("judgegreat").style.height = (15*scrollspeed)/timeHarsh + "px";
-document.getElementById("judgegood").style.height = (15*scrollspeed)/timeHarsh + "px";
-document.getElementById("judgemiss").style.height = (15*scrollspeed)/timeHarsh + "px";
-
-document.getElementById("trueperfectcount").innerHTML = (mods[3]) ? ("<span style='color:rgb(255,128,0)'>true perfect: </span>" + jg[4]) : ""
-document.getElementById("perfectcount").innerHTML = jg[0]
-document.getElementById("greatcount").innerHTML = jg[1]
-document.getElementById("goodcount").innerHTML = jg[2]
-document.getElementById("misscount").innerHTML = jg[3]
-
-document.getElementById("trueperfectth").innerHTML = (10/timeHarsh).toFixed(2) + "ms"
-document.getElementById("perfectth").innerHTML = (20/timeHarsh).toFixed(2) + "ms"
-document.getElementById("greatth").innerHTML = (50/timeHarsh).toFixed(2) + "ms"
-document.getElementById("goodth").innerHTML = (80/timeHarsh).toFixed(2) + "ms"
-document.getElementById("missth").innerHTML = (110/timeHarsh).toFixed(2) + "ms"
+document.getElementById("trueperfectth").innerHTML = (20/timeHarsh).toFixed(2) + "ms"
+document.getElementById("perfectth").innerHTML = (40/timeHarsh).toFixed(2) + "ms"
+document.getElementById("greatth").innerHTML = (100/timeHarsh).toFixed(2) + "ms"
+document.getElementById("goodth").innerHTML = (160/timeHarsh).toFixed(2) + "ms"
+document.getElementById("missth").innerHTML = (220/timeHarsh).toFixed(2) + "ms"
 }
 
 document.getElementById("song.boo.insane").innerHTML = "Insane<br>14<br><span style='font-size:17px;'>" + chartnps(901.52, [[1, 3], 0, 2, 0, 1, 0, 0, 0, 1, 0, 2, 0, 3, 0, 0, 0, 6, 0, 5, 0, 4, 0, 0, 0, 4, 0, 5, 0, 6, 0, 0, 0, 3, 0, 2, 0, 1, 0, 0, 0, 3, 0, 0, 0, 1, 0, 3, 2, 1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, [4, 6], 0, 5, 0, 4, 0, 0, 0, 4, 0, 5, 0, 6, 0, 0, 0, 3, 0, 2, 0, 1, 0, 0, 0, 1, 0, 2, 0, 3, 0, 0, 0, 6, 0, 5, 0, 4, 0, 0, 0, 5, 0, 0, 0, 5, 0, 6, 5, 4, 0, 0, 0, 6, 0, 0, 0, 5, 0, 0, 0, 4, 0, 0, 0, [1, 3], 0, 2, 0, 1, 0, 0, 0, 1, 0, 2, 0, 3, 0, 0, 0, 6, 0, 5, 0, 4, 0, 0, 0, 4, 0, 5, 0, 6, 0, 0, 0, [1, 3], 0, 2, 0, 1, 0, 0, 0, 4, 0, 3, 0, 2, 0, 0, 0, [6, 5], 0, 4, 0, 3, 0, 0, 0, 6, 0, 5, 0, 4, 0, 0, 0, [2, 3], 0, 1, 0, 0, 0, [1, 3], 0, 2, 0, 0, 0, [5, 6], 0, 4, 0, 0, 0, [4, 6], 0, 5, 0, 0, 0, [1, 2], 3, ['purple', 2], 1, [2, 3], 0, 0, 0, 
@@ -218,33 +343,9 @@ function switchPurple(n) {
 	if (n) {
 oldActive = activeLane
 activeLane = 3
-document.getElementById("redkey1").style.borderColor = "#A000FF"
-document.getElementById("redkey2").style.borderColor = "#A000FF"
-document.getElementById("redkey3").style.borderColor = "#A000FF"
-document.getElementById("bluekey1").style.borderColor = "#A000FF"
-document.getElementById("bluekey2").style.borderColor = "#A000FF"
-document.getElementById("bluekey3").style.borderColor = "#A000FF"
-document.getElementById("redkey1").style.backgroundColor = "#500080"
-document.getElementById("redkey2").style.backgroundColor = "#500080"
-document.getElementById("redkey3").style.backgroundColor = "#500080"
-document.getElementById("bluekey1").style.backgroundColor = "#500080"
-document.getElementById("bluekey2").style.backgroundColor = "#500080"
-document.getElementById("bluekey3").style.backgroundColor = "#500080"
 	} else {
 if (oldActive == 3) oldActive = 1
 activeLane = oldActive
-document.getElementById("redkey1").style.borderColor = "#FF0000"
-document.getElementById("redkey2").style.borderColor = "#FF0000"
-document.getElementById("redkey3").style.borderColor = "#FF0000"
-document.getElementById("bluekey1").style.borderColor = "#0080FF"
-document.getElementById("bluekey2").style.borderColor = "#0080FF"
-document.getElementById("bluekey3").style.borderColor = "#0080FF"
-document.getElementById("redkey1").style.backgroundColor = "#800000"
-document.getElementById("redkey2").style.backgroundColor = "#800000"
-document.getElementById("redkey3").style.backgroundColor = "#800000"
-document.getElementById("bluekey1").style.backgroundColor = "#004080"
-document.getElementById("bluekey2").style.backgroundColor = "#004080"
-document.getElementById("bluekey3").style.backgroundColor = "#004080"
 	}
 }
 
@@ -289,24 +390,19 @@ function getHolds() {
 function jd(n) {
 	switch(n) {
 		case 1:
-		document.getElementById("judgetext").innerHTML = "perfect :D"
-		document.getElementById("judgetext").style.color = "rgba(255, 255, 0, 128)"
+		return "c.text('perfect :D', '#FFFF00', 1366/2, 634*0.32, 'monospace', '30px', 'center')"
 		break;
 		case 2:
-		document.getElementById("judgetext").innerHTML = "great :)"
-		document.getElementById("judgetext").style.color = "rgba(20, 150, 20, 128)"
+		return "c.text('great :)', '#149614', 1366/2, 634*0.32, 'monospace', '30px', 'center')"
 		break;
 		case 3:
-		document.getElementById("judgetext").innerHTML = "good"
-		document.getElementById("judgetext").style.color = "rgba(0, 128, 255, 128)"
+		return "c.text('good', '#0080FF', 1366/2, 634*0.32, 'monospace', '30px', 'center')"
 		break;
 		case 4:
-		document.getElementById("judgetext").innerHTML = "miss..."
-		document.getElementById("judgetext").style.color = "rgba(255, 0, 0, 128)"
+		return "c.text('miss...', '#FF0000', 1366/2, 634*0.32, 'monospace', '30px', 'center')"
 		break;
 		case 5:
-		document.getElementById("judgetext").innerHTML = "true perfect :O"
-		document.getElementById("judgetext").style.color = "rgba(255, 128, 0, 128)"
+		return "c.text('true perfect :O', '#FF8000', 1366/2, 634*0.32, 'monospace', '30px', 'center')"
 		break;
 	}
 	jg[n-1]++;
@@ -339,168 +435,12 @@ return ((notecount / beatcount)*(bpm/60)).toFixed(2) + `nps`
 }
 }
 
-
-function movenotes() {
-if (document.getElementsByClassName("note").length > 0) {
-for (i = 0; i < document.getElementsByClassName("note").length; i++) {
-h = document.getElementsByClassName("note")
-	h[i].style.top = (parseFloat(h[i].style.top) - (((1000/fps)/8)*scrollspeed)) + "px"
-	if((parseFloat(h[i].style.top)-98) <= (-55*scrollspeed)/timeHarsh) {h[i].remove();score-=25;notecount++;combo=0;jd(4);if(calibrating){sboffset=Math.floor(((Date.now()-bostontime)*scrollspeed)-110);document.getElementById("oc").value=sboffset;calibrating=false;}}
-	else if((parseFloat(h[i].style.top)) <= (Math.floor(((Math.random() - 0.25) * botslop) + 98)) && (mods[0] || mods[2])) {
-		let key = controls[parseInt(h[i].classList[1].charAt(1))-1]
-		if ((mods[2] && (h[i].classList[1].charAt(1)=='1' || h[i].classList[1].charAt(1)=='6') || mods[0])) {Mousetrap.trigger(key, 'keydown')}
-		if (h[i] != undefined) {setTimeout(()=>{Mousetrap.trigger(key, 'keyup')}, 50)
-		}
-		}
-	if (h[0] != undefined) {
-	if(h[0].classList.contains("bluenote") && mods[1] && activeLane != 2) {
-		Mousetrap.trigger(controls[7], "keydown")
-	}
-	else if(h[0].classList.contains("rednote") && mods[1] && activeLane != 1) {
-		Mousetrap.trigger(controls[6], "keydown")
-	}
-	}
-}
-}
-}
-
-class holdnotes {
-	constructor() {
-		this.notes = []
-	}
-}
-
-var holdnotesc = new holdnotes()
-
-class holdnote {
-	constructor(lane, beats, id) {
-	this.lane = lane
-	this.beats = beats
-	this.id = id
-	this.span = new DOMParser().parseFromString(`<span id="holdnote${id}" class="sn${lane} h${lane} hold snote ${lane<=3 ? 'rednote' : 'bluenote'}" style="border: 2px solid ${lane<=3 ? '#FF0000' : '#0080FF'}; width:50px; height: ${(125*beats*scrollspeed)/((bpma*speedrate)/60)}px; position:absolute; left:${((lane-1)*54)+8}px; top:500px; z-index:7; background-color:${lane<=3 ? '#800000' : '#004080'};"></span>`, "text/html")
-	this.beingheld = false
-	this.canhold = true
-	this.keysjusthit = [false, false, false, false, false, false]
-	this.keysholding = [false, false, false, false, false, false]
-	this.i = 0
-	this.point;
-	this.keypoint = 98
-	this.gone = false
-	this.notesbefore = false
-	this.notesbefore2 = false
-	this.hitprevent = false
-	this.one;
-	this.two;
-	this.init()
-	}
-	move() {
-		if(!this.beingheld && document.getElementById(`holdnote${this.id}`) != undefined) {
-			document.getElementById(`holdnote${this.id}`).style.top = (parseFloat(document.getElementById(`holdnote${this.id}`).style.top) - (((1000/fps)/8)*scrollspeed)) + 'px'
-			if (parseFloat(document.getElementById(`holdnote${this.id}`).style.top)-98 <= (-55*scrollspeed)/timeHarsh) {
-			this.gone = true	
-			document.getElementById(`holdnote${this.id}`).remove()
-			score-=25
-			notecount++
-			combo=0
-			jd(4)
-			holdnotesc.notes[this.id-1] = undefined
-			}
-		}
-		if (this.beingheld) {
-			//console.log('a')
-			if (keyspressed.includes(this.lane)) {
-			if (parseFloat(document.getElementById(`holdnote${this.id}`).style.height) > 0) {
-			document.getElementById(`holdnote${this.id}`).style.height = Math.max(parseFloat(document.getElementById(`holdnote${this.id}`).style.height) - (((1000/fps)/8)*scrollspeed), 0) + 'px'
-			} else {
-			this.gone = true
-			document.getElementById(`holdnote${this.id}`).remove()
-			score+=150
-			score2+=3
-			notecount++
-			combo++
-			jd(1)
-			holdnotesc.notes[this.id-1] = undefined
-			}
-			} else {
-			/*this.canhold = false
-			this.beingheld = false*/
-			this.point = parseFloat(document.getElementById(`holdnote${this.id}`).style.height)
-			this.keypoint = 0
-			if (this.point-this.keypoint <= (10*scrollspeed)/timeHarsh && this.point-this.keypoint >= (-10*scrollspeed)/timeHarsh) {score+=150;score2+=3;notecount++;combo++;jd(1);}
-			else if (this.point-this.keypoint <= (25*scrollspeed)/timeHarsh && this.point-this.keypoint >= (-25*scrollspeed)/timeHarsh) {score+=100;score2+=2;notecount++;combo++;jd(2);}
-			else if (this.point-this.keypoint <= (40*scrollspeed)/timeHarsh && this.point-this.keypoint >= (-40*scrollspeed)/timeHarsh) {score+=50;score2+=1;notecount++;combo++;jd(3);}
-			else /*if (this.point-this.keypoint <= (55*scrollspeed)/timeHarsh && this.point-this.keypoint >= (-55*scrollspeed)/timeHarsh)*/ {score-=25;notecount++;combo=0;jd(4);}
-			this.gone=true;document.getElementById(`holdnote${this.id}`).remove();holdnotesc.notes[this.id-1] = undefined
-			}
-		}
-	}
-	hit(n) {
-	this.notesbefore2 = false
-	if (document.getElementsByClassName(`sn${n}`).length > 1) {
-	for (this.i = 0; this.i < document.getElementsByClassName(`sn${n}`).length; this.i++) {
-	//if (document.getElementsByClassName("snote")[i] != undefined && document.getElementById(`holdnote${this.id}`) != undefined) {
-	this.one = parseFloat(document.getElementsByClassName(`sn${n}`)[this.i].style.top)
-	this.two = parseFloat(document.getElementById(`holdnote${this.id}`).style.top)
-	if (this.one < this.two) {this.notesbefore2 = true}
-	//console.log(this.one)
-	//console.log(this.two)
-	//}
-	}
-	}
-	this.notesbefore = this.notesbefore2
-	//console.log(this.notesbefore)
-		if ((this.canhold && n == this.lane) && !this.notesbefore && !this.hitprevent) {
-		//console.log("u press " + n)
-		this.point = parseFloat(document.getElementById(`holdnote${this.id}`).style.top)
-		this.keypoint = 98
-		if (this.point-this.keypoint <= (10*scrollspeed)/timeHarsh && this.point-this.keypoint >= (-10*scrollspeed)/timeHarsh) {score+=150;score2+=3;notecount++;combo++;jd(1);}
-		else if (this.point-this.keypoint <= (25*scrollspeed)/timeHarsh && this.point-this.keypoint >= (-25*scrollspeed)/timeHarsh) {score+=100;score2+=2;notecount++;combo++;jd(2);}
-		else if (this.point-this.keypoint <= (40*scrollspeed)/timeHarsh && this.point-this.keypoint >= (-40*scrollspeed)/timeHarsh) {score+=50;score2+=1;notecount++;combo++;jd(3);}
-		else if (this.point-this.keypoint <= (55*scrollspeed)/timeHarsh && this.point-this.keypoint >= (-55*scrollspeed)/timeHarsh) {score-=25;notecount++;combo=0;jd(4);this.gone=true;document.getElementById(`holdnote${this.id}`).remove();holdnotesc.notes[this.id-1] = undefined}
-		if (this.point-this.keypoint <= (55*scrollspeed)/timeHarsh && this.point-this.keypoint >= (-55*scrollspeed)/timeHarsh) {
-		this.beingheld = true
-		}
-		}
-	this.hitprevent = false
-	}
-	unhit(n) {
-		if (this.canhold && n == this.lane) {
-		//console.log("u unpress " + n)
-		}
-	}
-
-	init() {
-	window.requestAnimationFrame(()=>{
-	if(document.getElementById(`holdnote${this.id}`) != undefined) {
-	for (this.i = 0; this.i <= 5; this.i++) {
-	if (keyspressed.includes(this.i+1) && !this.keysjusthit[this.i] && !this.keysholding[this.i]) {
-	this.keysjusthit[this.i] = true;
-	//this.hit(this.i+1)
-	}
-	if (this.keysjusthit[this.i]) {
-	this.keysjusthit[this.i] = false
-	this.keysholding[this.i] = true
-	}
-	if (!keyspressed.includes(this.i+1) && this.keysholding[this.i]) {
-	this.keysholding[this.i] = false
-	this.unhit(this.i+1)
-	}
-	}
-	//this.move()
-	this.init()
-	}
-	})
-	}
-}
-
-
-function moveholds() {
-if (holdnotesc.notes.length > 0) {
-for (i = 0; i < holdnotesc.notes.length; i++) {
-if (holdnotesc.notes[i] != undefined) {
-if (!holdnotesc.notes[i].gone) {
-holdnotesc.notes[i].move()
-}
+function hitNote(n) {
+if (notes.length > 0) {
+p = 0
+for (p = 0; p < notes.length; p++) {
+if (notes[p]!=undefined) {
+if(notes[p].lane == n) {notes[p].hit();break;}
 }
 }
 }
@@ -510,89 +450,6 @@ function reverse12(n) {
 if (n == 1) return 2
 else return 1
 } 
-
-function hitNote(n) {
-if (holdnotesc.notes.length > 0) {
-for (i = 0; i < holdnotesc.notes.length; i++) {
-if (holdnotesc.notes[i] != undefined) {
-if (!holdnotesc.notes[i].gone) {
-holdnotesc.notes[i].hit(n)
-}
-}
-}
-}
-if (document.getElementsByClassName('note')[0] != undefined) {
-if (document.getElementsByClassName(`n${n}`)[0] != undefined) {
-let point = parseFloat(document.getElementsByClassName(`n${n}`)[0].style.top)
-let keypoint = 98
-if ((point-keypoint <= (5*scrollspeed)/timeHarsh && point-keypoint >= (-5*scrollspeed)/timeHarsh) && mods[3]) {score+=165;score2+=3.3;notecount++;combo++;jd(5);}
-else if (point-keypoint <= (10*scrollspeed)/timeHarsh && point-keypoint >= (-10*scrollspeed)/timeHarsh) {score+=150;score2+=3;notecount++;combo++;jd(1);}
-else if (point-keypoint <= (25*scrollspeed)/timeHarsh && point-keypoint >= (-25*scrollspeed)/timeHarsh) {score+=100;score2+=2;notecount++;combo++;jd(2);}
-else if (point-keypoint <= (40*scrollspeed)/timeHarsh && point-keypoint >= (-40*scrollspeed)/timeHarsh) {score+=50;score2+=1;notecount++;combo++;jd(3);}
-else if (point-keypoint <= (55*scrollspeed)/timeHarsh && point-keypoint >= (-55*scrollspeed)/timeHarsh) {score-=25;notecount++;combo=0;jd(4);}
-if (point-keypoint <= (55*scrollspeed)/timeHarsh && point-keypoint >= (-55*scrollspeed)/timeHarsh) {document.getElementsByClassName(`n${n}`)[0].remove()
-/*if (holdnotesc.notes.length > 0) {
-for (i = 0; i < holdnotesc.notes.length; i++) {
-if (holdnotesc.notes[i] != undefined) {
-if (!holdnotesc.notes[i].gone) {
-if (holdnotesc.notes[i].lane == n) {holdnotesc.notes[i].hitprevent = true}
-break;
-}
-}
-}
-}*/
-}
-//console.log(point-keypoint)
-}
-}
-}
-
-//I CANT FUCKING FIX LONG NOTES ITS BEEN TWO DAYS
-/*
-function hitHold(n) {
-if (document.getElementsByClassName('hold')[0] != undefined) {
-if (document.getElementsByClassName(`h${n}`)[0] != undefined) {
-if (document.getElementsByClassName(`h${n}`)[0].canhold == undefined) {
-let canholdafter = false
-let point = parseFloat(document.getElementsByClassName(`h${n}`)[0].style.top)
-let keypoint = 98
-if (point-keypoint <= (10*scrollspeed)/timeHarsh && point-keypoint >= (-10*scrollspeed)/timeHarsh) {score+=150;score2+=3;notecount++;combo++;jd(1);canholdafter=true;}
-else if (point-keypoint <= (25*scrollspeed)/timeHarsh && point-keypoint >= (-25*scrollspeed)/timeHarsh) {score+=100;score2+=2;notecount++;combo++;jd(2);canholdafter=true;}
-else if (point-keypoint <= (40*scrollspeed)/timeHarsh && point-keypoint >= (-40*scrollspeed)/timeHarsh) {score+=50;score2+=1;notecount++;combo++;jd(3);canholdafter=true;}
-else if (point-keypoint <= (55*scrollspeed)/timeHarsh && point-keypoint >= (-55*scrollspeed)/timeHarsh) {score-=25;notecount++;combo=0;jd(4);document.getElementsByClassName(`h${n}`)[0].remove()}
-//if (point-keypoint <= (55*scrollspeed)/timeHarsh && point-keypoint >= (-55*scrollspeed)/timeHarsh) document.getElementsByClassName(`h${n}`)[0].remove()
-//console.log(point-keypoint)
-if (canholdafter) {
-document.getElementsByClassName(`h${n}`)[0].beingheld = true
-holdingNotes(document.getElementsByClassName(`h${n}`)[0])
-}
-}
-}
-}
-hitNote(n)
-}
-
-function holdingNotes(a) {
-if (a.beingheld) {
-window.requestAnimationFrame(()=>{
-if (keyspressed.includes(parseInt(a.classList[0].charAt(1)))) {
-//console.log(keyspressed)	
-if (parseFloat(a.style.height) > 0) {
-a.style.height = Math.max((parseFloat(a.style.height) - ((125/fps)*1)), 0) + "px";
-holdingNotes(a)
-} else {
-score+=150;score2+=3;notecount++;combo++;jd(1);
-a.remove();
-}
-} else {
-a.beingheld = false
-a.canhold = false
-}
-})
-}
-}
-*/
-
 
 function readChart(bpm, notes, audioname, offset = 0) {
 if (typeof notes != 'object') {console.log("sorry, you cannot play this chart because it is not an object")}
@@ -656,74 +513,32 @@ if (notes[readpos].includes(4)) summonNote(4)
 if (notes[readpos].includes(5)) summonNote(5)
 if (notes[readpos].includes(6)) summonNote(6)*/
 }}
-else if (notes[readpos] == undefined) {setTimeout(()=>{audio.pause(); document.getElementById("playblocker").style.display = "none"; chartstart = false; holdnotesc.notes = []}, 3540); clearInterval(inter);}
+else if (notes[readpos] == undefined) {setTimeout(()=>{audio.pause(); document.getElementById("playblocker").style.display = "none"; chartstart = false; notes = []}, 3000); clearInterval(inter);}
 readpos++;
 }, (60/bpm)*1000)
 }
 }
 
 function summonNote(num) {
-bostontime = Date.now();
-	switch(num) {
-		case 1:
-		document.getElementById("redlane1").innerHTML += `<span class='sn1 n1 note snote rednote' style="border: 2px solid #FF0000; width:50px; height:10px; position:absolute; left:8px; top:500px; z-index:7; background-color: #800000;"></span>`
-        break;
-		case 2:
-		document.getElementById("redlane1").innerHTML += `<span class='sn2 n2 note snote rednote' style="border: 2px solid #FF0000; width:50px; height:10px; position:absolute; left:62px; top:500px; z-index:7; background-color: #800000;"></span>`
-        break;
-		case 3:
-		document.getElementById("redlane1").innerHTML += `<span class='sn3 n3 note snote rednote' style="border: 2px solid #FF0000; width:50px; height:10px; position:absolute; left:116px; top:500px; z-index:7; background-color: #800000;"></span>`
-        break;
-		case 4:
-		document.getElementById("redlane1").innerHTML += `<span class='sn4 n4 note snote bluenote' style="border: 2px solid #0080FF; width:50px; height:10px; position:absolute; left:170px; top:500px; z-index:7; background-color: #004080;"></span>`
-        break;
-		case 5:
-		document.getElementById("redlane1").innerHTML += `<span class='sn5 n5 note snote bluenote' style="border: 2px solid #0080FF; width:50px; height:10px; position:absolute; left:224px; top:500px; z-index:7; background-color: #004080;"></span>`
-        break;
-		case 6:
-		document.getElementById("redlane1").innerHTML += `<span class='sn6 n6 note snote bluenote' style="border: 2px solid #0080FF; width:50px; height:10px; position:absolute; left:278px; top:500px; z-index:7; background-color: #004080;"></span>`
-        break;
-	} 
+if(calibrating)ostrichostrich=Date.now()
+notes.push(new note(num))
 }
 
 function summonHold(num, beats) {
-	/*switch(num) {
-		case 1:
-		document.getElementById("redlane1").innerHTML += `<span class='h1 hold snote rednote' style="border: 2px solid #FF0000; width:50px; height:` + (125*beats*scrollspeed)/(bpma/60) + `px; position:absolute; left:8px; top:500px; z-index:7; background-color: #800000;"></span>`
-        break;
-		case 2:
-		document.getElementById("redlane1").innerHTML += `<span class='h2 hold snote rednote' style="border: 2px solid #FF0000; width:50px; height:` + (125*beats*scrollspeed)/(bpma/60) + `px; position:absolute; left:62px; top:500px; z-index:7; background-color: #800000;"></span>`
-        break;
-		case 3:
-		document.getElementById("redlane1").innerHTML += `<span class='h3 hold snote rednote' style="border: 2px solid #FF0000; width:50px; height:` + (125*beats*scrollspeed)/(bpma/60) + `px; position:absolute; left:116px; top:500px; z-index:7; background-color: #800000;"></span>`
-        break;
-		case 4:
-		document.getElementById("redlane1").innerHTML += `<span class='h4 hold snote bluenote' style="border: 2px solid #0080FF; width:50px; height:` + (125*beats*scrollspeed)/(bpma/60) + `px; position:absolute; left:170px; top:500px; z-index:7; background-color: #004080;"></span>`
-        break;
-		case 5:
-		document.getElementById("redlane1").innerHTML += `<span class='h5 hold snote bluenote' style="border: 2px solid #0080FF; width:50px; height:` + (125*beats*scrollspeed)/(bpma/60) + `px; position:absolute; left:224px; top:500px; z-index:7; background-color: #004080;"></span>`
-        break;
-		case 6:
-		document.getElementById("redlane1").innerHTML += `<span class='h6 hold snote bluenote' style="border: 2px solid #0080FF; width:50px; height:` + (125*beats*scrollspeed)/(bpma/60) + `px; position:absolute; left:278px; top:500px; z-index:7; background-color: #004080;"></span>`
-        break;
-	}*/
-	//document.getElementById("redlane1").innerHTML += `<span class="h${num} hold snote ${num<=3 ? 'rednote' : 'bluenote'}" style="border: 2px solid ${num<=3 ? '#FF0000' : '#0080FF'}; width:50px; height: ${(125*beats*scrollspeed)/(bpma/60)}px; position:absolute; left:${((num-1)*54)+8}px; top:500px; z-index:7; background-color:${num<=3 ? '#800000' : '#004080'};"></span>`
-	holdnotesc.notes.push(new holdnote(num, beats, holdnotesc.notes.length-1))
-	document.getElementById("redlane1").innerHTML += holdnotesc.notes[holdnotesc.notes.length-1].span.firstChild.outerHTML
 }
 
-Mousetrap.bind(controls[0], function() {if (!keyspressed.includes(1) && (activeLane == 1 || activeLane == 3)) {hitNote(1); document.getElementById("redkey1").style.backgroundColor = (activeLane == 3 ? "#6300A0" : "#A00000"); keyspressed.push(1);}}, 'keydown');
-Mousetrap.bind(controls[0], function() {document.getElementById("redkey1").style.backgroundColor = (activeLane == 3 ? "#500080" : "#800000"); keyspressed.splice(keyspressed.indexOf(1), 1)}, 'keyup');
-Mousetrap.bind(controls[1], function() {if (!keyspressed.includes(2) && (activeLane == 1 || activeLane == 3)) {hitNote(2); document.getElementById("redkey2").style.backgroundColor = (activeLane == 3 ? "#6300A0" : "#A00000"); keyspressed.push(2);}}, 'keydown');
-Mousetrap.bind(controls[1], function() {document.getElementById("redkey2").style.backgroundColor = (activeLane == 3 ? "#500080" : "#800000"); keyspressed.splice(keyspressed.indexOf(2), 1)}, 'keyup');
-Mousetrap.bind(controls[2], function() {if (!keyspressed.includes(3) && (activeLane == 1 || activeLane == 3)) {hitNote(3); document.getElementById("redkey3").style.backgroundColor = (activeLane == 3 ? "#6300A0" : "#A00000"); keyspressed.push(3);}}, 'keydown');
-Mousetrap.bind(controls[2], function() {document.getElementById("redkey3").style.backgroundColor = (activeLane == 3 ? "#500080" : "#800000"); keyspressed.splice(keyspressed.indexOf(3), 1)}, 'keyup');
-Mousetrap.bind(controls[3], function() {if (!keyspressed.includes(4) && (activeLane == 2 || activeLane == 3)) {hitNote(4); document.getElementById("bluekey1").style.backgroundColor = (activeLane == 3 ? "#6300A0" : "#0050A0"); keyspressed.push(4);}}, 'keydown');
-Mousetrap.bind(controls[3], function() {document.getElementById("bluekey1").style.backgroundColor = (activeLane == 3 ? "#500080" : "#004080"); keyspressed.splice(keyspressed.indexOf(4), 1)}, 'keyup');
-Mousetrap.bind(controls[4], function() {if (!keyspressed.includes(5) && (activeLane == 2 || activeLane == 3)) {hitNote(5); document.getElementById("bluekey2").style.backgroundColor = (activeLane == 3 ? "#6300A0" : "#0050A0"); keyspressed.push(5);}}, 'keydown');
-Mousetrap.bind(controls[4], function() {document.getElementById("bluekey2").style.backgroundColor = (activeLane == 3 ? "#500080" : "#004080"); keyspressed.splice(keyspressed.indexOf(5), 1)}, 'keyup');
-Mousetrap.bind(controls[5], function() {if (!keyspressed.includes(6) && (activeLane == 2 || activeLane == 3)) {hitNote(6); document.getElementById("bluekey3").style.backgroundColor = (activeLane == 3 ? "#6300A0" : "#0050A0"); keyspressed.push(6);}}, 'keydown');
-Mousetrap.bind(controls[5], function() {document.getElementById("bluekey3").style.backgroundColor = (activeLane == 3 ? "#500080" : "#004080"); keyspressed.splice(keyspressed.indexOf(6), 1)}, 'keyup');
+Mousetrap.bind(controls[0], function() {if (!keyspressed.includes(1) && (activeLane == 1 || activeLane == 3)) {hitNote(1);keyspressed.push(1);}}, 'keydown');
+Mousetrap.bind(controls[0], function() {keyspressed.splice(keyspressed.indexOf(1), 1)}, 'keyup');
+Mousetrap.bind(controls[1], function() {if (!keyspressed.includes(2) && (activeLane == 1 || activeLane == 3)) {hitNote(2);keyspressed.push(2);}}, 'keydown');
+Mousetrap.bind(controls[1], function() {keyspressed.splice(keyspressed.indexOf(2), 1)}, 'keyup');
+Mousetrap.bind(controls[2], function() {if (!keyspressed.includes(3) && (activeLane == 1 || activeLane == 3)) {hitNote(3);keyspressed.push(3);}}, 'keydown');
+Mousetrap.bind(controls[2], function() {keyspressed.splice(keyspressed.indexOf(3), 1)}, 'keyup');
+Mousetrap.bind(controls[3], function() {if (!keyspressed.includes(4) && (activeLane == 2 || activeLane == 3)) {hitNote(4);keyspressed.push(4);}}, 'keydown');
+Mousetrap.bind(controls[3], function() {keyspressed.splice(keyspressed.indexOf(4), 1)}, 'keyup');
+Mousetrap.bind(controls[4], function() {if (!keyspressed.includes(5) && (activeLane == 2 || activeLane == 3)) {hitNote(5);keyspressed.push(5);}}, 'keydown');
+Mousetrap.bind(controls[4], function() {keyspressed.splice(keyspressed.indexOf(5), 1)}, 'keyup');
+Mousetrap.bind(controls[5], function() {if (!keyspressed.includes(6) && (activeLane == 2 || activeLane == 3)) {hitNote(6);keyspressed.push(6);}}, 'keydown');
+Mousetrap.bind(controls[5], function() {keyspressed.splice(keyspressed.indexOf(6), 1)}, 'keyup');
 Mousetrap.bind(controls[6], function() {if (activeLane != 1 && activeLane != 3) {activeLane = 1}}, "keydown")
 Mousetrap.bind(controls[7], function() {if (activeLane != 2 && activeLane != 3) {activeLane = 2}}, "keydown")
 
@@ -754,21 +569,34 @@ controls[5] = bc3
 controls[6] = lsc1
 controls[7] = lsc2
 Mousetrap.reset();
-Mousetrap.bind(controls[0], function() {if (!keyspressed.includes(1) && (activeLane == 1 || activeLane == 3)) {hitNote(1); document.getElementById("redkey1").style.backgroundColor = (activeLane == 3 ? "6300A0" : "#A00000"); keyspressed.push(1);}}, 'keydown');
-Mousetrap.bind(controls[0], function() {document.getElementById("redkey1").style.backgroundColor = (activeLane == 3 ? "500080" : "#800000"); keyspressed.splice(keyspressed.indexOf(1), 1)}, 'keyup');
-Mousetrap.bind(controls[1], function() {if (!keyspressed.includes(2) && (activeLane == 1 || activeLane == 3)) {hitNote(2); document.getElementById("redkey2").style.backgroundColor = (activeLane == 3 ? "6300A0" : "#A00000"); keyspressed.push(2);}}, 'keydown');
-Mousetrap.bind(controls[1], function() {document.getElementById("redkey2").style.backgroundColor = (activeLane == 3 ? "500080" : "#800000"); keyspressed.splice(keyspressed.indexOf(2), 1)}, 'keyup');
-Mousetrap.bind(controls[2], function() {if (!keyspressed.includes(3) && (activeLane == 1 || activeLane == 3)) {hitNote(3); document.getElementById("redkey3").style.backgroundColor = (activeLane == 3 ? "6300A0" : "#A00000"); keyspressed.push(3);}}, 'keydown');
-Mousetrap.bind(controls[2], function() {document.getElementById("redkey3").style.backgroundColor = (activeLane == 3 ? "500080" : "#800000"); keyspressed.splice(keyspressed.indexOf(3), 1)}, 'keyup');
-Mousetrap.bind(controls[3], function() {if (!keyspressed.includes(4) && (activeLane == 2 || activeLane == 3)) {hitNote(4); document.getElementById("bluekey1").style.backgroundColor = (activeLane == 3 ? "6300A0" : "#0060A0"); keyspressed.push(4);}}, 'keydown');
-Mousetrap.bind(controls[3], function() {document.getElementById("bluekey1").style.backgroundColor = (activeLane == 3 ? "500080" : "#004080"); keyspressed.splice(keyspressed.indexOf(4), 1)}, 'keyup');
-Mousetrap.bind(controls[4], function() {if (!keyspressed.includes(5) && (activeLane == 2 || activeLane == 3)) {hitNote(5); document.getElementById("bluekey2").style.backgroundColor = (activeLane == 3 ? "6300A0" : "#0060A0"); keyspressed.push(5);}}, 'keydown');
-Mousetrap.bind(controls[4], function() {document.getElementById("bluekey2").style.backgroundColor = (activeLane == 3 ? "500080" : "#004080"); keyspressed.splice(keyspressed.indexOf(5), 1)}, 'keyup');
-Mousetrap.bind(controls[5], function() {if (!keyspressed.includes(6) && (activeLane == 2 || activeLane == 3)) {hitNote(6); document.getElementById("bluekey3").style.backgroundColor = (activeLane == 3 ? "6300A0" : "#0060A0"); keyspressed.push(6);}}, 'keydown');
-Mousetrap.bind(controls[5], function() {document.getElementById("bluekey3").style.backgroundColor = (activeLane == 3 ? "500080" : "#004080"); keyspressed.splice(keyspressed.indexOf(6), 1)}, 'keyup');
+Mousetrap.bind(controls[0], function() {if (!keyspressed.includes(1) && (activeLane == 1 || activeLane == 3)) {hitNote(1);keyspressed.push(1);}}, 'keydown');
+Mousetrap.bind(controls[0], function() {keyspressed.splice(keyspressed.indexOf(1), 1)}, 'keyup');
+Mousetrap.bind(controls[1], function() {if (!keyspressed.includes(2) && (activeLane == 1 || activeLane == 3)) {hitNote(2);keyspressed.push(2);}}, 'keydown');
+Mousetrap.bind(controls[1], function() {keyspressed.splice(keyspressed.indexOf(2), 1)}, 'keyup');
+Mousetrap.bind(controls[2], function() {if (!keyspressed.includes(3) && (activeLane == 1 || activeLane == 3)) {hitNote(3);keyspressed.push(3);}}, 'keydown');
+Mousetrap.bind(controls[2], function() {keyspressed.splice(keyspressed.indexOf(3), 1)}, 'keyup');
+Mousetrap.bind(controls[3], function() {if (!keyspressed.includes(4) && (activeLane == 2 || activeLane == 3)) {hitNote(4);keyspressed.push(4);}}, 'keydown');
+Mousetrap.bind(controls[3], function() {keyspressed.splice(keyspressed.indexOf(4), 1)}, 'keyup');
+Mousetrap.bind(controls[4], function() {if (!keyspressed.includes(5) && (activeLane == 2 || activeLane == 3)) {hitNote(5);keyspressed.push(5);}}, 'keydown');
+Mousetrap.bind(controls[4], function() {keyspressed.splice(keyspressed.indexOf(5), 1)}, 'keyup');
+Mousetrap.bind(controls[5], function() {if (!keyspressed.includes(6) && (activeLane == 2 || activeLane == 3)) {hitNote(6);keyspressed.push(6);}}, 'keydown');
+Mousetrap.bind(controls[5], function() {keyspressed.splice(keyspressed.indexOf(6), 1)}, 'keyup');
 Mousetrap.bind(controls[6], function() {if (activeLane != 1 && activeLane != 3) {activeLane = 1}}, "keydown")
 Mousetrap.bind(controls[7], function() {if (activeLane != 2 && activeLane != 3) {activeLane = 2}}, "keydown")
 }
+}
+
+function setColors() {
+rcol = document.getElementById("rcol").value
+bcol = document.getElementById("bcol").value
+pcol = document.getElementById("pcol").value
+if ((rcol.length == 4 || rcol.length == 7) &&
+(bcol.length == 4 || pcol.length == 7) &&
+(bcol.length == 4 || pcol.length == 7)) {
+colors[0] = rcol
+colors[1] = bcol
+colors[2] = pcol
+} else {alert('error: your color\'s number after the hex is not 3 digits nor 6 digits long.')}
 }
 
 function setFPS(n) {
@@ -779,7 +607,19 @@ startAnimating(n)
 }, 50)
 }
 
+function switchbostons(arr) {
+document.getElementById('rc1').innerHTML = arr[0]
+document.getElementById('rc2').innerHTML = arr[1]
+document.getElementById('rc3').innerHTML = arr[2]
+document.getElementById('bc1').innerHTML = arr[3]
+document.getElementById('bc2').innerHTML = arr[4]
+document.getElementById('bc3').innerHTML = arr[5]
+document.getElementById('lsc1').innerHTML = arr[6]
+document.getElementById('lsc2').innerHTML = arr[7]
+}
+
 //setInterval(movenotes, 1000/60)
 setInterval(updateText, 1000/60)
 setInterval(getNotes, 1)
 setInterval(getHolds, 1)
+setInterval(refreshHitters, 1000/60)
